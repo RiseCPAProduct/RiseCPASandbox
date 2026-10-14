@@ -1,0 +1,38 @@
+import { describe, expect, it } from "vitest";
+import { getLatestNews, mockNews, sortNewest, type NewsItem } from "./mock-news";
+
+function news(id: string, date: string): NewsItem {
+  return { id, type: "blog", title: id, date, summary: "" };
+}
+
+describe("sortNewest", () => {
+  it("sorts newest first, including dates without zero-padding", () => {
+    const items = [news("a", "2026-09-30"), news("b", "2026-10-2"), news("c", "2025-12-31")];
+    expect(sortNewest(items).map((n) => n.id)).toEqual(["b", "a", "c"]);
+  });
+
+  it("limits the count", () => {
+    const items = [news("a", "2026-01-01"), news("b", "2026-02-01"), news("c", "2026-03-01")];
+    expect(sortNewest(items, 2).map((n) => n.id)).toEqual(["c", "b"]);
+  });
+
+  it("does not mutate the input", () => {
+    const items = [news("a", "2026-01-01"), news("b", "2026-02-01")];
+    sortNewest(items);
+    expect(items.map((n) => n.id)).toEqual(["a", "b"]);
+  });
+});
+
+describe("getLatestNews", () => {
+  it("returns the single newest item", () => {
+    expect(getLatestNews([news("a", "2026-01-01"), news("b", "2026-05-01")])?.id).toBe("b");
+  });
+
+  it("returns undefined when there is no news", () => {
+    expect(getLatestNews([])).toBeUndefined();
+  });
+
+  it("has mock news covering every type", () => {
+    expect(new Set(mockNews.map((n) => n.type))).toEqual(new Set(["anniversary", "birthday", "blog"]));
+  });
+});

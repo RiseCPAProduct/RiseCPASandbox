@@ -172,3 +172,66 @@ Date Modified / Year: Ability to filter by timeframe (e.g., specific months or y
 - Secondary Colour: Charcoal (#616261)
 - Tertiary Colour: White (#FFFFFF)
 - Note company should be stylized as RISE CPA in all capitals.
+
+# Meeting 3 Notes
+
+## 1. Survey Questions & Review
+
+- **Survey Approval:** The drafted survey questions were reviewed and approved by Eric. The team needs to turn them into an actual, finalized survey link.
+- **Distribution:** Eric offered to distribute the survey to staff and partners himself to save them time, and will coordinate with Amy (Manager of Operations) and Trevor (Internet Technology Partner) during their Operational meetings to gather feedback.
+
+## 2. Sandbox Demonstration & Feature Feedback
+
+- **Global Search & Filters:** The team showcased the search and filter sandbox. Eric confirmed that the search system and filters (department, document type, year modified) hit the mark. He noted that year modified is more helpful than month filters.
+- **Table View Preference:** Eric specifically liked the table view format for search results, where documents are laid out in rows and columns showing:
+  - Document name
+  - Type
+  - Department
+  - Publishing month/year
+  - Last updated date
+- **Department Navigation:** Eric likes the idea of being able to navigate by department, though the exact format or layout choice can be confirmed in the next meeting.
+
+## 3. Permissions & Visibility of Restricted Content
+
+- **The "Ad-Hoc" Folder Problem:** Re-examined the root cause of the previous SharePoint mess — the admin drive containing policies and templates was locked down as read-only. Lacking write access for firm documents, staff began creating their own personal/ad-hoc folders in other directories just to find files more easily.
+- **Hidden, Not Locked:** Eric clarified that employees should only see what is available to them. If content is restricted or locked (such as partner-only or inter-departmental files), staff should not see greyed-out or locked icons at all — those files must be completely hidden from their view.
+
+## 4. Single-Page Hub Architecture & Key Components
+
+- **Unified Single-Page Layout:** Eric prefers a unified single-page hub rather than jumping across multiple windows. The application should integrate:
+  - Global search and filtering for documents.
+  - Department navigation and resource access (accessing a department's resources is the main workflow to prioritize).
+  - An announcement / News Hub section featuring staff and client anniversaries, birthdays, and new blog postings (such as summaries of federal/provincial budgets sent to clients so staff stay aligned).
+  - An AI chatbot section on the landing page, mainly used for HR-related inquiries (e.g., vacation entitlement, bereavement leave).
+  - A personal OneDrive button/link allowing employees a quick link to their individual personal OneDrive.
+- **Onboarding Guide:** Eric would like an onboarding feature or simple user guide included to help new users navigate the system.
+
+## 5. Role-Based & Department-Based Content
+
+- **Role Differentiation:** Different content should be displayed based on user roles (Partner vs. Manager vs. Regular Employee/Staff/Co-op).
+  - **Partners & Managers** (including Amy, who has partner-level access): Have access to management contexts, such as staff coaching, mentoring, and performance review records for direct reports.
+  - **Regular Staff / Co-ops:** Focus on standard operating resources and templates.
+- **Core Goal of Unification:** The overarching project goal is unification — not just creating a centralized file storage system, but aligning the firm culturally (avoiding 7 different partner styles) and establishing a standardized workflow with technology.
+
+## 6. Success Metrics & Action Items
+
+### Key Features to Demonstrate
+
+Easier navigation and faster access to information are the absolute highest priorities for the prototype pitch.
+
+### Action Items & Next Steps
+
+- [ ] Finalize the approved survey questions into an actual digital survey and send the link to Eric.
+- [ ] Continue building the React single-page prototype featuring the table-view search, department navigation, news hub, AI chatbot section, and personal OneDrive link.
+- [ ] **Next Meeting Follow-Up:** Clarify the reasoning behind the AI chatbot creation with Eric using specific framing (e.g., *"If HR gets random, unpredictable questions from employees via Slack or email throughout the day, do those ad-hoc inquiries disrupt their workflow and cause delays with work they actually should be doing?"*).
+- [ ] **Next Meeting Follow-Up:** Clarify the reasoning behind the department navigation creation with Eric (e.g., which format — cards, sidebar, or dropdown — and why this feature is needed).
+- [ ] **Next Meeting Follow-Up:** Clarify the reasoning behind the personal OneDrive button creation with Eric (he mentioned it would be useful, but why aside from ease of access?).
+- [ ] Confirm meeting invite for next week at the same time.
+
+## 7. What Has Changed Between the Second and Third Meetings
+
+- **Consolidation into a Single-Page Hub:** Moving from separate pages or a multi-window setup, Meeting 3 established a firm requirement for a single-page dashboard that seamlessly houses department navigation, a global search table, an announcement news hub, an AI chatbot section, and a personal OneDrive button.
+- **Search Result Format Finalized:** While previous meetings discussed general filtering, Meeting 3 locked in a specific table view format displaying columns for name, type, department, publishing month/year, and last updated date.
+- **Refined Visibility Rules:** Meeting 2 established read-only access for staff; Meeting 3 clarified that restricted content must be completely invisible rather than displayed as locked or greyed-out items.
+- **Concrete Feature Prioritization:** Accessing department resources via global search and navigation was officially named the primary user workflow that the prototype must successfully execute.
+- **Actionable Survey Deployment:** Transitioning from an abstract agreement to distribute surveys, the actual questions were reviewed and approved, with Eric set to coordinate distribution via Amy and Trevor.

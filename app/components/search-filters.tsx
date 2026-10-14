@@ -1,4 +1,10 @@
-import { placeholderDocuments, type Department, type ItemType } from "@/lib/placeholder-documents";
+import {
+  STANDARD_FOLDERS,
+  type Department,
+  type DocumentItem,
+  type ItemType,
+  type StandardFolder,
+} from "@/lib/placeholder-documents";
 import { getDepartments, getYears, hasActiveFilters, NO_FILTERS, type SearchFilters as Filters } from "@/lib/search";
 
 export const TYPE_LABELS: Record<ItemType, string> = {
@@ -8,22 +14,25 @@ export const TYPE_LABELS: Record<ItemType, string> = {
   excel: "Excel",
 };
 
-const DEPARTMENTS = getDepartments(placeholderDocuments);
-const YEARS = getYears(placeholderDocuments);
 const TYPES = Object.keys(TYPE_LABELS) as ItemType[];
 
 const SELECT_CLASS =
   "w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-brand-charcoal outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green/30";
 
 type Props = {
+  // Items the current role may see; options are derived from these.
+  items: DocumentItem[];
   filters: Filters;
   onChange: (filters: Filters) => void;
 };
 
-// Rendered inside SearchBar, which owns the filter state.
-export default function SearchFilters({ filters, onChange }: Props) {
+// Rendered inside SearchBar; HubShell owns the filter state.
+export default function SearchFilters({ items, filters, onChange }: Props) {
+  const departments = getDepartments(items);
+  const years = getYears(items);
+
   return (
-    <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">
+    <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:flex lg:items-end">
       <label className="flex-1 text-xs font-medium text-brand-charcoal">
         Department
         <select
@@ -32,9 +41,25 @@ export default function SearchFilters({ filters, onChange }: Props) {
           onChange={(e) => onChange({ ...filters, department: e.target.value as Department | "all" })}
         >
           <option value="all">All departments</option>
-          {DEPARTMENTS.map((d) => (
+          {departments.map((d) => (
             <option key={d} value={d}>
               {d}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label className="flex-1 text-xs font-medium text-brand-charcoal">
+        Folder
+        <select
+          className={`${SELECT_CLASS} mt-1`}
+          value={filters.folder}
+          onChange={(e) => onChange({ ...filters, folder: e.target.value as StandardFolder | "all" })}
+        >
+          <option value="all">All folders</option>
+          {STANDARD_FOLDERS.map((f) => (
+            <option key={f} value={f}>
+              {f}
             </option>
           ))}
         </select>
@@ -64,7 +89,7 @@ export default function SearchFilters({ filters, onChange }: Props) {
           onChange={(e) => onChange({ ...filters, year: e.target.value === "all" ? "all" : Number(e.target.value) })}
         >
           <option value="all">All years</option>
-          {YEARS.map((y) => (
+          {years.map((y) => (
             <option key={y} value={y}>
               {y}
             </option>

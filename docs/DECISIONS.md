@@ -59,3 +59,78 @@
 **Context:** The earlier decision said to revisit Vitest once filters were added. The filter logic is still small and pure.
 **Decision:** Verify with lint, a production build, and a one-off script covering 8 query and filter combinations. Defer Vitest again.
 **Alternatives considered:** Adding Vitest now (reasonable next step if a Phase 3 adds more logic, or if the team wants CI tests).
+
+## 2026-10-10 — Search results become a 5-column table (updates "Each result shows type, department, path and modified date")
+**Context:** In Meeting 3, Eric chose a table view for results with the columns Name, Type, Department, Publishing month/year and Last updated date (DISCOVERY.md, Meeting 3, sections 2 and 7). The team's mockup shows that layout.
+**Decision:** Replace the `<ul>` list with a semantic `<table>` in a new `ResultsTable` component, with the columns Name, Type, Department, Published and Last Update. The Name cell keeps the type icon and shows the folder path as grey subtext. The table scrolls horizontally inside its container on narrow screens, and the page container gets wider to fit five columns.
+**Alternatives considered:** Matching the mockup exactly with no icon or path (path helps staff tell same-named files apart, e.g. several "Budget" items). A CSS grid styled as a table (loses native table semantics for screen readers). Stacked cards on mobile (more code. Horizontal scroll is enough for a desktop-first intranet).
+
+## 2026-10-10 — Two dates per item: `published` (YYYY-MM) and `modified` (YYYY-MM-DD)
+**Context:** The table needs both a publishing month/year and a last-updated date. Until now each item had a single `modified` date.
+**Decision:** Add `published` as a year-month string and keep `modified` as the full last-update date. The Year filter keeps using the `modified` year, because Eric confirmed that "year modified" is the most useful filter. Placeholder data keeps `published` on or before `modified`.
+**Alternatives considered:** Renaming the existing date to `published` and inventing a new `modified` (more churn for the same result). Keeping one date and formatting it two ways (both columns would always show the same month, which defeats the point). Filtering by published year (doesn't match what Eric asked for).
+
+## 2026-10-10 — Date display variation
+**Context:** The mockup shows variations in format for published and modified documents. The team chose month and year for Last Update.
+**Decision:** `formatPublished` returns "YYYY Mon", and `formatModified` returns "Month YYYY". Both are pure functions in `lib/format-date.ts` that use fixed month-name arrays, so server and client render identical text.
+**Alternatives considered:** Relative times such as "2m ago" (needs a timestamp and a client-only clock, risks hydration mismatches, and the data has no times). "Oct 29" (month and day without a year is ambiguous across years, which is the outdated-file problem the client wants to avoid). `Intl.DateTimeFormat` (output depends on locale and runtime).
+
+## 2026-10-10 — Clicking Type, Department or Last Update applies that filter
+**Context:** The mockup shows these cells in blue, like links. Staff browsing results often want "more like this".
+**Decision:** These cells are buttons that set the matching filter (Type, Department, or the Year of `modified`) through a pure `applyFilter` helper in `lib/search.ts`, using the existing filter state in `SearchBar`. Published stays plain text, because there is no published filter and clicking it to set the modified year would be misleading.
+**Alternatives considered:** Styling only (looks clickable but does nothing). Making Published clickable to set the year (it would filter on a different date than the one clicked). Adding a separate published-year filter (no client request for it).
+
+## 2026-10-10 — Add Vitest for Phase 3 (follows "Phase 2 still verified without a test framework")
+**Context:** CLAUDE.md requires TDD, and the earlier decision said to add Vitest if Phase 3 added more logic. Phase 3 adds date formatting, a second date field and a click-to-filter helper.
+**Decision:** Add Vitest as a dev dependency with an `npm test` script. Write the tests for `lib/` functions first.
+**Alternatives considered:** Another one-off verification script (doesn't support TDD and isn't repeatable). Jest (heavier setup with TypeScript and ESM. Vitest works with almost no config).
+
+## 2026-10-13 — Both table dates show "Month YYYY" (updates "Date display variation")
+**Context:** The previous entry used two formats: "YYYY Mon" for Published and "Month YYYY" for Last Update. The team wants one consistent format.
+**Decision:** Published and Last Update both show the full month name and year, e.g. "January 2026", through a single pure `formatMonthYear` function in `lib/format-date.ts` that accepts YYYY-MM and YYYY-MM-DD.
+**Alternatives considered:** Keeping two formats (inconsistent, and the columns look like different kinds of data). Abbreviated months such as "Jan 2026" (less clear for a broad audience, and the table has room for full names).
+
+## 2026-10-10 — Sandbox the whole single-page hub, not just search (updates the Phase 1 to 2 goal)
+**Context:** In Meeting 3, Eric asked for one unified page containing search, department navigation, a news hub, an HR chatbot, a OneDrive link and an onboarding guide, with role-based visibility. Testing features one at a time gives less useful feedback than showing the whole concept.
+**Decision:** The implementation plan's goal is now a single-page hub prototype covering every Meeting 3 feature, built in Phases 4 to 10 after the table view. The previous search-only goal stays in the plan, labelled "Old goal". Everything still uses placeholder content.
+**Alternatives considered:** Finishing search to production quality first (delays feedback on the overall layout, which Eric cares about most). Several separate pages (Eric explicitly prefers one page).
+
+## 2026-10-10 — Chatbot is a scripted showcase, not a live AI service
+**Context:** Discovery says the chatbot should answer HR policy questions only, and confidentiality is a firm boundary. The sandbox needs to show the experience, not prove a model integration.
+**Decision:** A keyword-matched `answerQuestion` function over fictional policy entries in `lib/mock-hr-policy.ts`, demoed with a "vacation in Fiji" script that returns the vacation policy and links to the Vacation Request Form. It runs entirely in the browser.
+**Alternatives considered:** A real Claude API route (needs an API key and costs money, and adds a server boundary and data-handling questions before the UX is validated). A static mock with no working input (doesn't let Eric or staff try their own questions).
+
+## 2026-10-10 — Demo role switcher for role-based visibility
+**Context:** Staff, managers and partners should see different content, and restricted items must be fully hidden (Meeting 3, sections 3 and 5). The sandbox has no auth.
+**Decision:** Items get a `visibility` level (`staff`, `manager`, `partner`), and a clearly labelled "Viewing as" switcher (default Staff) filters items before search, filter options, counts and department navigation are calculated, so hidden items leave no trace.
+**Alternatives considered:** Real authentication (out of scope for a placeholder sandbox). Greyed-out or locked items (Eric explicitly rejected this). Filtering only the search results (counts and filter options would still give away restricted items).
+
+## 2026-10-10 — Department navigation uses cards for now
+**Context:** Eric likes navigating by department but hasn't confirmed a format (Meeting 3 follow-up). The team needs something to build and demo now.
+**Decision:** A responsive grid of department cards showing each department's standard folders. Clicking a card or folder sets the shared Department filter, so the search table updates. `DepartmentNav` is its own component, so it can be swapped later if Eric prefers another format.
+**Alternatives considered:** A sidebar (takes width from the 5-column table and the chatbot). A header dropdown (hides departments behind a click, which is weaker for new employees). Waiting for Eric (holds up the hub demo).
+
+## 2026-10-10 — Closable latest-news banner at the top of the hub
+**Context:** On a single page, the News section sits below search and departments, so staff may scroll past firm news. The team wants to show Eric a "shopping sale banner" concept that keeps staff up to date.
+**Decision:** A slim banner above the header shows the newest news item, with a "Read more" link that scrolls to the News section and an X to close it. The dismissed item's id is saved in `localStorage`, so a newer item brings the banner back. It renders only after the client has checked storage, to avoid a flash or hydration mismatch. It's presented to Eric as an optional concept.
+**Alternatives considered:** No banner (news is easy to miss on a long page). A modal or toast popup (more intrusive, which suits an intranet home page poorly). Remembering dismissal permanently (staff would never see later news). Not remembering dismissal (the banner would come back on every visit, which is annoying).
+
+## 2026-10-10 — Shared hub state lives in a client `HubShell` (updates "Filter options come from the data; filter state lives in SearchBar")
+**Context:** Department cards, the chatbot's document links and the role switcher all need to change the search query and filters that `SearchBar` used to own.
+**Decision:** A client `HubShell` component (`app/components/hub-shell.tsx`) owns the role, query and filters. `SearchBar` is now controlled through props. `page.tsx` stays a Server Component that renders the header, the banner and `HubShell`, and passes the server-rendered `NewsHub` in as a prop. Changing role resets the filters, because the options can differ per role.
+**Alternatives considered:** URL search params (shareable links, but more wiring than a demo needs, and still worth revisiting later). React context (adds indirection for a single page with one owner).
+
+## 2026-10-10 — Folder filter added for department cards
+**Context:** Clicking a folder on a department card (e.g. HR > Budget) needs to narrow the table to that folder.
+**Decision:** Add a `folder` filter (Budget / Minutes / Projects / Published Documents) and a matching "Folder" dropdown, so the narrowed state is visible and can be cleared like the other filters. An item's folder is the second segment of its path.
+**Alternatives considered:** Matching the path text in the search box (mixes navigation with search, and "Budget" would also match names). A hidden folder state with no dropdown (staff couldn't see why results were narrowed).
+
+## 2026-10-10 — Stored UI state read with `useSyncExternalStore`
+**Context:** The banner and the onboarding guide remember their dismissal in `localStorage`, which the server can't read. The project's Next.js guide warns that reading it during render causes hydration errors, and setting state in an effect causes a flash.
+**Decision:** A `useStoredValue` hook (`app/hooks/use-stored-value.ts`) returns `undefined` on the server and during hydration, and the stored value afterwards. Both components render nothing while the value is `undefined`. Reads and writes are wrapped in try/catch, with an in-memory fallback so dismissal still works when storage is blocked.
+**Alternatives considered:** An inline pre-paint script (no pop-in, but more complex for two optional panels). `useEffect` + `useState` (flash, and the lint rules discourage setting state in effects).
+
+## 2026-10-10 — Hub verified in the browser with Edge and playwright-core
+**Context:** The plan asks for checks in `npm run dev`, but the repo has no browser test tooling.
+**Decision:** Drive the dev server once with `playwright-core` (installed outside the repo) using the installed Microsoft Edge. Desktop and 375px screenshots were checked, along with these interactions: banner close and reload, budget table, cell filters, department card, Fiji chat, off-topic fallback and role switching. There were no console errors. Nothing was added to the project.
+**Alternatives considered:** Adding Playwright as a project dependency with E2E tests (worth doing if the prototype moves past the pitch stage).

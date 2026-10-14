@@ -16,7 +16,7 @@ const openSans = Open_Sans({
 
 export const metadata: Metadata = {
   title: "RISE CPA Intranet",
-  description: "Sandbox prototype of the RISE CPA intranet document search",
+  description: "Sandbox prototype of the RISE CPA intranet single-page hub",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

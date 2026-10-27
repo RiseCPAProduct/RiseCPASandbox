@@ -85,7 +85,7 @@
 **Decision:** Add Vitest as a dev dependency with an `npm test` script. Write the tests for `lib/` functions first.
 **Alternatives considered:** Another one-off verification script (doesn't support TDD and isn't repeatable). Jest (heavier setup with TypeScript and ESM. Vitest works with almost no config).
 
-## 2026-10-13 — Both table dates show "Month YYYY" (updates "Date display variation")
+## 2026-10-10 — Both table dates show "Month YYYY" (updates "Date display variation")
 **Context:** The previous entry used two formats: "YYYY Mon" for Published and "Month YYYY" for Last Update. The team wants one consistent format.
 **Decision:** Published and Last Update both show the full month name and year, e.g. "January 2026", through a single pure `formatMonthYear` function in `lib/format-date.ts` that accepts YYYY-MM and YYYY-MM-DD.
 **Alternatives considered:** Keeping two formats (inconsistent, and the columns look like different kinds of data). Abbreviated months such as "Jan 2026" (less clear for a broad audience, and the table has room for full names).
@@ -134,3 +134,4 @@
 **Context:** The plan asks for checks in `npm run dev`, but the repo has no browser test tooling.
 **Decision:** Drive the dev server once with `playwright-core` (installed outside the repo) using the installed Microsoft Edge. Desktop and 375px screenshots were checked, along with these interactions: banner close and reload, budget table, cell filters, department card, Fiji chat, off-topic fallback and role switching. There were no console errors. Nothing was added to the project.
 **Alternatives considered:** Adding Playwright as a project dependency with E2E tests (worth doing if the prototype moves past the pitch stage).
+

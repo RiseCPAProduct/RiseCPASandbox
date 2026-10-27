@@ -1,42 +1,68 @@
 "use client";
 
-import { getLatestNews, mockNews, NEWS_TYPE_LABELS } from "@/lib/mock-news";
+import { useEffect, useState } from "react";
+import { Button } from "@fluentui/react-components";
+import { ChevronLeft20Regular, ChevronRight20Regular, Dismiss20Regular } from "@fluentui/react-icons";
+import { latestNews, mockNews, NEWS_TYPE_LABELS, nextIndex, prevIndex } from "@/lib/mock-news";
 import { useStoredValue } from "../hooks/use-stored-value";
+import { usePrefersReducedMotion } from "../hooks/use-reduced-motion";
 
 const STORAGE_KEY = "rise-news-banner-dismissed";
-const latest = getLatestNews(mockNews);
+const ROTATE_MS = 6000;
+const posts = latestNews(mockNews, 3);
 
-// Closable "sale banner" style strip for the newest firm news. Dismissal is
-// remembered per item, so a newer item brings the banner back.
+const ICON_BUTTON = "text-white! hover:bg-white/20! min-w-0!";
+
+// Rotates through the three latest posts (Meeting 4, section 3). Closing it
+// stores the newest post's id, so it stays hidden until something newer exists.
 export default function NewsBanner() {
   const [dismissedId, setDismissedId] = useStoredValue(STORAGE_KEY);
+  const [index, setIndex] = useState(0);
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const reducedMotion = usePrefersReducedMotion();
+  const paused = hovered || focused || reducedMotion;
+  const hidden = posts.length === 0 || dismissedId === undefined || dismissedId === posts[0].id;
+
+  useEffect(() => {
+    if (paused || hidden) return;
+    const timer = setInterval(() => setIndex((i) => nextIndex(i, posts.length)), ROTATE_MS);
+    return () => clearInterval(timer);
+  }, [paused, hidden]);
 
   // undefined = storage not checked yet; render nothing to avoid a flash.
-  if (!latest || dismissedId === undefined || dismissedId === latest.id) return null;
+  if (hidden) return null;
+  const post = posts[index];
 
   return (
-    <div className="bg-brand-green text-white">
-      <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-2 text-sm">
-        <p className="min-w-0 flex-1">
+    <section
+      aria-roledescription="carousel"
+      aria-label="Latest announcements"
+      className="rounded-lg bg-brand-green text-white"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocus={() => setFocused(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget)) setFocused(false);
+      }}
+    >
+      <div className="flex items-center gap-1 px-2 py-2 text-sm sm:gap-2">
+        <Button appearance="transparent" size="small" className={ICON_BUTTON} icon={<ChevronLeft20Regular />} aria-label="Previous announcement" onClick={() => setIndex((i) => prevIndex(i, posts.length))} />
+        <div className="min-w-0 flex-1" aria-live={paused ? "polite" : "off"} aria-roledescription="slide" aria-label={`${index + 1} of ${posts.length}`}>
           <span className="mr-2 rounded bg-white/20 px-1.5 py-0.5 text-xs font-semibold uppercase tracking-wide">
-            New {NEWS_TYPE_LABELS[latest.type]}
+            {NEWS_TYPE_LABELS[post.type]}
           </span>
-          <span className="font-medium">{latest.title}</span>
+          <span className="font-medium">{post.title}</span>
           <a href="#news" className="ml-2 whitespace-nowrap underline underline-offset-2 hover:no-underline">
             Read more
           </a>
-        </p>
-        <button
-          type="button"
-          onClick={() => setDismissedId(latest.id)}
-          aria-label="Dismiss announcement"
-          className="shrink-0 rounded p-1 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-        >
-          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
-            <path d="M6 6l12 12M18 6 6 18" strokeLinecap="round" />
-          </svg>
-        </button>
+        </div>
+        <span className="shrink-0 text-xs text-white/90">
+          {index + 1} of {posts.length}
+        </span>
+        <Button appearance="transparent" size="small" className={ICON_BUTTON} icon={<ChevronRight20Regular />} aria-label="Next announcement" onClick={() => setIndex((i) => nextIndex(i, posts.length))} />
+        <Button appearance="transparent" size="small" className={ICON_BUTTON} icon={<Dismiss20Regular />} aria-label="Dismiss announcements" onClick={() => setDismissedId(posts[0].id)} />
       </div>
-    </div>
+    </section>
   );
 }

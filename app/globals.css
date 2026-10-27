@@ -4,6 +4,8 @@
 :root {
   --brand-green: #87b04b;
   --brand-charcoal: #616261;
+  /* Darker shade of the brand green for white text (Fluent brand 60) */
+  --brand-green-dark: #4e7027;
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -13,6 +15,7 @@
   --color-foreground: var(--foreground);
   --color-brand-green: var(--brand-green);
   --color-brand-charcoal: var(--brand-charcoal);
+  --color-brand-green-dark: var(--brand-green-dark);
   --font-sans: var(--font-open-sans);
   --font-heading: var(--font-roboto);
 }

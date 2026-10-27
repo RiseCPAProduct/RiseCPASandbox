@@ -1,9 +1,18 @@
 // Placeholder content for sandboxing only. Every item is fictional;
 // no real RISE CPA documents or data are used.
 
-export type Department = "HR" | "Finance" | "Marketing" | "Operations";
+export const DEPARTMENTS = ["HR", "Finance", "Marketing", "Operations"] as const;
+export type Department = (typeof DEPARTMENTS)[number];
 
-export type ItemType = "folder" | "pdf" | "word" | "excel";
+export const ITEM_TYPES = ["folder", "pdf", "word", "excel"] as const;
+export type ItemType = (typeof ITEM_TYPES)[number];
+
+export const TYPE_LABELS: Record<ItemType, string> = {
+  folder: "Folder",
+  pdf: "PDF",
+  word: "Word",
+  excel: "Excel",
+};
 
 // Lowest role allowed to see an item. Restricted items are hidden
 // entirely from lower roles, never shown as locked.
@@ -37,6 +46,8 @@ export const placeholderDocuments: DocumentItem[] = [
   { id: "hr-5", name: "HR Budget 2026", type: "excel", department: "HR", path: "HR / Budget", published: "2025-12", modified: "2026-01-12", visibility: "staff" },
   { id: "hr-6", name: "Partner Compensation Summary 2026", type: "excel", department: "HR", path: "HR / Budget", published: "2026-02", modified: "2026-08-14", visibility: "partner" },
   { id: "hr-7", name: "Staff Coaching Notes Q3", type: "word", department: "HR", path: "HR / Projects", published: "2026-07", modified: "2026-09-30", visibility: "manager" },
+  { id: "hr-8", name: "Client File Naming SOP", type: "pdf", department: "HR", path: "HR / Published Documents", published: "2025-03", modified: "2026-05-11", visibility: "staff" },
+  { id: "hr-9", name: "New Hire Checklist", type: "word", department: "HR", path: "HR / Published Documents", published: "2024-08", modified: "2026-08-25", visibility: "staff" },
 
   // Finance
   { id: "fin-1", name: "Budget", type: "folder", department: "Finance", path: "Finance", published: "2024-03", modified: "2025-07-20", visibility: "staff" },
@@ -54,4 +65,6 @@ export const placeholderDocuments: DocumentItem[] = [
   { id: "ops-1", name: "Operations Budget 2026", type: "excel", department: "Operations", path: "Operations / Budget", published: "2026-01", modified: "2026-01-23", visibility: "staff" },
   { id: "ops-2", name: "Fax Cover Sheet", type: "word", department: "Operations", path: "Operations / Published Documents", published: "2024-01", modified: "2024-10-17", visibility: "staff" },
   { id: "ops-3", name: "Office Move Project", type: "folder", department: "Operations", path: "Operations / Projects", published: "2025-10", modified: "2026-1-24", visibility: "staff" },
+  { id: "ops-4", name: "Internet Technology Service Ticket Guide", type: "pdf", department: "Operations", path: "Operations / Published Documents", published: "2025-05", modified: "2026-02-09", visibility: "staff" },
+  { id: "ops-5", name: "Remote Desktop How-To", type: "word", department: "Operations", path: "Operations / Published Documents", published: "2024-11", modified: "2025-09-15", visibility: "staff" },
 ];

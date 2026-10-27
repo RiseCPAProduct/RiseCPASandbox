@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatMonthYear } from "./format-date";
+import { formatDayMonth, formatMonthYear } from "./format-date";
 
 describe("formatMonthYear", () => {
   it("formats a year-month", () => {
@@ -12,5 +12,12 @@ describe("formatMonthYear", () => {
 
   it("handles months without zero-padding", () => {
     expect(formatMonthYear("2026-1-24")).toBe("January 2026");
+  });
+});
+
+describe("formatDayMonth", () => {
+  it("formats a date as month and day", () => {
+    expect(formatDayMonth("2026-11-04")).toBe("November 4");
+    expect(formatDayMonth("2026-1-24")).toBe("January 24");
   });
 });

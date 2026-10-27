@@ -1,9 +1,47 @@
 import { describe, expect, it } from "vitest";
-import { getLatestNews, mockNews, sortNewest, type NewsItem } from "./mock-news";
+import { getLatestNews, latestNews, mockNews, nextIndex, prevIndex, sortNewest, type NewsItem } from "./mock-news";
 
 function news(id: string, date: string): NewsItem {
-  return { id, type: "blog", title: id, date, summary: "" };
+  return { id, type: "blog", title: id, date, summary: "", postedBy: "Partner" };
 }
+
+describe("latestNews", () => {
+  it("returns the newest items, newest first", () => {
+    const items = [news("a", "2026-01-01"), news("b", "2026-05-01"), news("c", "2026-03-01"), news("d", "2026-04-01")];
+    expect(latestNews(items, 3).map((n) => n.id)).toEqual(["b", "d", "c"]);
+  });
+
+  it("returns fewer when there are fewer items", () => {
+    expect(latestNews([news("a", "2026-01-01")], 3)).toHaveLength(1);
+  });
+});
+
+describe("nextIndex and prevIndex", () => {
+  it("move one step", () => {
+    expect(nextIndex(0, 3)).toBe(1);
+    expect(prevIndex(2, 3)).toBe(1);
+  });
+
+  it("wrap around both ends", () => {
+    expect(nextIndex(2, 3)).toBe(0);
+    expect(prevIndex(0, 3)).toBe(2);
+  });
+
+  it("stay at 0 for an empty list", () => {
+    expect(nextIndex(0, 0)).toBe(0);
+    expect(prevIndex(0, 0)).toBe(0);
+  });
+});
+
+describe("mock news", () => {
+  it("says who posted every item", () => {
+    for (const item of mockNews) expect(item.postedBy, item.id).toBeTruthy();
+  });
+
+  it("includes the CRA PST change blog post", () => {
+    expect(mockNews.some((n) => n.type === "blog" && /PST/.test(n.title))).toBe(true);
+  });
+});
 
 describe("sortNewest", () => {
   it("sorts newest first, including dates without zero-padding", () => {

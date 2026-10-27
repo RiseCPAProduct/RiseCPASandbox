@@ -19,3 +19,9 @@ export function formatMonthYear(date: string): string {
   const [year, month] = date.split("-").map(Number);
   return `${MONTHS[month - 1]} ${year}`;
 }
+
+// Formats YYYY-MM-DD as "November 4", for event dates.
+export function formatDayMonth(date: string): string {
+  const [, month, day] = date.split("-").map(Number);
+  return `${MONTHS[month - 1]} ${day}`;
+}

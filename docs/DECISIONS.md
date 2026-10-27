@@ -135,3 +135,64 @@
 **Decision:** Drive the dev server once with `playwright-core` (installed outside the repo) using the installed Microsoft Edge. Desktop and 375px screenshots were checked, along with these interactions: banner close and reload, budget table, cell filters, department card, Fiji chat, off-topic fallback and role switching. There were no console errors. Nothing was added to the project.
 **Alternatives considered:** Adding Playwright as a project dependency with E2E tests (worth doing if the prototype moves past the pitch stage).
 
+## 2026-10-15 — Restored package.json dev dependencies
+**Context:** The "update document files" commit removed the `lint` script and the `tailwindcss`, `@tailwindcss/postcss`, `eslint` and `eslint-config-next` dev dependencies, so a fresh clone couldn't style pages or run lint. Phase 11 was ticked, but Fluent UI wasn't in `package.json`.
+**Decision:** Restore `package.json` from the commit before, then add `@fluentui/react-components` (9.74.11) and `@fluentui/react-icons` (2.0.344), pinned to exact versions.
+**Alternatives considered:** Leaving lint out (the `/done` gate needs it).
+
+## 2026-10-15 — Fluent UI v9 with a RISE CPA brand ramp, Tailwind for layout only
+**Context:** Eric approved a Microsoft component library so the prototype can be recreated in SharePoint (Meeting 4, section 7).
+**Decision:** `lib/fluent-theme.ts` defines a 16-shade green ramp with `#87B04B` as shade 80 and builds `riseLightTheme` with `createLightTheme`, using Open Sans as the base font. Because `#87B04B` gives about 2.4:1 contrast with white, filled buttons and brand text use shade 60 (`#4E7027`). `app/providers.tsx` renders Fluent's styles during server rendering with `createDOMRenderer`, `renderToStyleElements` and `useServerInsertedHTML`. Controls come from Fluent; Tailwind handles layout and spacing. Layout classes sit on a div inside `FluentProvider`, because Fluent copies the provider's className onto every portal (dropdowns, dialogs), and a full-height class there covered the page.
+**Alternatives considered:** Using `#87B04B` for filled buttons (fails WCAG contrast). Fluent's default blue theme (doesn't look like RISE CPA).
+
+## 2026-10-15 — Tabs are routes; header tabs navigate with the router
+**Context:** The hub becomes five tabs (Meeting 4, sections 1 and 9).
+**Decision:** One route per tab (`/`, `/search`, `/departments`, `/departments/[department]`, `/calendar`, `/help`). The header uses a Fluent `TabList` whose selection calls `router.push`, with the selected tab from `activeTab(pathname)` in `lib/nav.ts`. Department pages are prerendered with `generateStaticParams`, and an unknown slug calls `notFound()`.
+**Alternatives considered:** Client-side tab state on one page (no shareable URLs, and Back doesn't work). Styling Next.js links to look like tabs (loses Fluent's tab look and keyboard behaviour).
+
+## 2026-10-15 — Demo role in a root-layout context (replaces HubShell)
+**Context:** The "Viewing as" role must survive switching tabs.
+**Decision:** `DemoRoleProvider` in the root layout holds the role and exposes the role-filtered items, so every tab works from items the role may see. `HubShell` was deleted. The role resets on a full page reload, which is fine for a demo.
+**Alternatives considered:** Saving the role in `localStorage` (a presenter could forget they left it on Partner).
+
+
+## 2026-10-15 — Search state lives in the URL, updated with the native history API
+**Context:** `/search?department=HR&folder=Budget` should open pre-filtered, and Back should undo a filter.
+**Decision:** `filtersFromParams` / `filtersToParams` (`lib/search-params.ts`) convert between the URL and the search state; unknown values fall back to "all". `useUrlSearchState` reads `useSearchParams` and writes with `window.history.pushState` for filters and `replaceState` for typing, which Next.js syncs with `useSearchParams`. The search box keeps its own text and follows the URL when it changes elsewhere. Pages that read the URL are wrapped in `Suspense`, as the Next.js docs require for static pages.
+**Alternatives considered:** `router.push` on every keystroke (refetches the route, so typing lags). Local state only (no shareable links).
+
+## 2026-10-15 — Department sidebar is a Fluent OverlayDrawer, not NavDrawer
+**Context:** Eric wants a pop-out left sidebar plus landing-page cards (Meeting 4, section 5).
+**Decision:** A menu button in the header opens an `OverlayDrawer` listing role-visible departments and their folders as Next.js links, so the role survives navigation. Cards and folders link to `/departments/<slug>?folder=<Folder>`.
+**Alternatives considered:** `NavDrawer` (its items are built for Fluent's own navigation state and don't fit Next.js links as easily). An always-visible sidebar (takes width from the 5-column table).
+
+## 2026-10-15 — File overview in a side drawer
+**Context:** The lo-fi shows a file's details before opening it.
+**Decision:** Selecting a file name opens an end-side `OverlayDrawer` (`min(100vw, 26rem)` wide, so full width at 375px) with type, department, location, published and last update, plus a disabled "Open file (demo)" button.
+**Alternatives considered:** An inline expanding row (cramped inside a horizontally scrolling table).
+
+## 2026-10-15 — Floating Ask HR uses a chat reducer and a non-modal panel
+**Context:** Section 6 asks for a floating corner button with a clear/reset button and no edit-message control.
+**Decision:** `chatReducer` (`lib/chat.ts`) has `send`, `reply` and `reset` actions; `send` and `reply` are separate so the UI can show the typing indicator between them. The panel is a non-modal dialog fixed bottom-right (a bottom sheet at 375px). Escape and the close button close it and return focus to the button. Suggested questions show until the first message.
+**Alternatives considered:** A modal Fluent `Dialog` (blocks the page, but staff may want to read a document while asking). A `send` that adds the answer immediately (no conversational pause).
+
+## 2026-10-15 — Rotating banner pauses on hover, focus and reduced motion
+**Context:** The banner rotates through the three latest posts (section 3).
+**Decision:** It moves every 6 seconds, with previous / next buttons and "n of 3". Rotation stops while the pointer or keyboard focus is on it, and never starts when `prefers-reduced-motion` is set (read with `useSyncExternalStore`, which reports "reduced" until the browser answers). While it rotates, its live region is off, so screen readers aren't interrupted every 6 seconds. Closing it stores the newest post's id, as before.
+**Alternatives considered:** Rotating without pause controls (fails WCAG 2.2.2, Pause, Stop, Hide).
+
+## 2026-10-15 — Calendar uses a fixed demo date
+**Context:** Server and client must render the same month.
+**Decision:** `DEMO_TODAY` (2026-10-01) sets the starting month and the upcoming events. `buildMonthGrid` uses UTC dates, so every time zone builds the same grid. There are two October events and eight November events, so both the first month and "Next month" have something to show. Days with events are buttons; other days aren't focusable.
+**Alternatives considered:** The real date (the demo would show an empty month after November 2026).
+
+## 2026-10-15 — Onboarding tour: first month, at most once a day
+**Context:** Section 2: show the guide during the first month, then stop; the fallback is first login only, reopenable.
+**Decision:** `shouldShowOnboarding` shows the tour from the first visit through day 30 unless "Don't show again" was chosen. The provider also stores the date it last opened by itself, so it opens at most once a day rather than on every reload. The Help page can reopen it and has demo controls ("Reset onboarding", "Pretend it's day 31"). The first-visit date uses the browser's local date. `docs/FEASIBILITY.md` explains why real use needs per-user storage.
+**Alternatives considered:** Opening on every page load in the first month (became annoying in testing).
+
+## 2026-10-15 — Verified with headless Edge; security-auditor agent not available
+**Context:** Phase 22 asks for a full walk-through and an OWASP check with the `security-auditor` agent.
+**Decision:** The walk-through was scripted with `playwright-core` (installed outside the repo, as before) against `npm run dev`: 45 checks at 1280px and 375px, with no console errors other than the expected 404 for an unknown department. No `security-auditor` agent is defined in this project, so that check is still open. The app has no back end, sign-in or secrets, sends no user input anywhere, and its only external link uses `rel="noopener noreferrer"`.
+**Alternatives considered:** Adding Playwright to the project (still worth doing if the prototype moves past the pitch stage).
+

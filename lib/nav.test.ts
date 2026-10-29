@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { activeTab, NAV_TABS } from "./nav";
 
 describe("NAV_TABS", () => {
-  it("lists the five hub tabs in order", () => {
-    expect(NAV_TABS.map((t) => t.label)).toEqual(["Home", "Search", "Departments", "Calendar", "Help"]);
+  it("lists the hub tabs in order, with Publishing after Departments", () => {
+    expect(NAV_TABS.map((t) => t.label)).toEqual(["Home", "Search", "Departments", "Publishing", "Calendar", "Help"]);
   });
 });
 
@@ -16,6 +16,10 @@ describe("activeTab", () => {
     expect(activeTab("/search")).toBe("search");
     expect(activeTab("/calendar")).toBe("calendar");
     expect(activeTab("/help")).toBe("help");
+  });
+
+  it("keeps Publishing active on its review and publish pages", () => {
+    expect(activeTab("/publishing/review")).toBe("publishing");
   });
 
   it("keeps Departments active on a department page", () => {

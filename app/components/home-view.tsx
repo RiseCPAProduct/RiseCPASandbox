@@ -16,6 +16,7 @@ import { useDemoRole } from "./demo-role";
 import DepartmentNav from "./department-nav";
 import NewsBanner from "./news-banner";
 import NewsHub from "./news-hub";
+import WhatsNew from "./whats-new";
 
 function searchHref(query: string): string {
   return `/search?${new URLSearchParams({ q: query })}`;
@@ -64,6 +65,11 @@ export default function HomeView() {
           </Button>
         </form>
       </div>
+
+      <section aria-labelledby="whats-new-heading">
+        <SectionHeading id="whats-new-heading">What&apos;s new</SectionHeading>
+        <WhatsNew />
+      </section>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="space-y-8 lg:col-span-2">

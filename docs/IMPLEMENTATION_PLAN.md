@@ -231,3 +231,34 @@ Sections 4, 6 and 7. Eric wants to know which features SharePoint can't support,
 - [x] Remove components and code no longer used (old hub sections, unused Tailwind-only controls)
 - [ ] Use the `security-auditor` agent for an OWASP check (no such agent is defined in this project; see DECISIONS.md)
 - [x] Update `docs/DECISIONS.md` with every decision made in Phases 11 to 21
+---
+# Rise/Folio phases (planned 2026-10-28)
+Research for every phase below: docs/DISCOVERY.md, "Rise/Folio MVP" (section numbers refer to it) and "RISE CPA: Fifth Meeting Summary". The product shifts from an intranet site to a publishing and findability app: one path into the Published folder (Submit -> Partner approval -> Publish), the firm's rules set the name, folder and audience, AI pre-fills the work, and a human always approves. Three phases only; publishing comes first.
+
+AI approach (applies to every phase): every AI call runs on the server, never in the browser, behind one `AiProvider` interface in `lib/ai/`. Each task sends a prompt plus a zod schema and gets back typed JSON; code then validates the result against the firm's rules and flags low-confidence fields. The prototype uses Claude (`@anthropic-ai/sdk`, structured outputs). Gemini Flash-Lite, the planned Good Company provider (section 10), swaps in by setting `AI_PROVIDER=gemini` and filling in `lib/ai/gemini.ts`; nothing else changes. With no key configured, AI buttons say so and every form still works by hand (section 10: "The product works fully without AI").
+
+Back end: Next.js Route Handlers under `app/api/` over a `PublishingStore` interface with an in-memory implementation (seeded demo data, resets when the server restarts). Supabase (section 11) replaces the store later behind the same interface. The demo role switcher stands in for sign-in: the browser sends the role, and the server enforces who may do what.
+
+## Phase 23 — Publishing pipeline: Submit -> Review -> Smart Publish
+Sections 1, 2, 6 and 7 (Submit, Review, Publish, Find).
+- [x] Write failing tests for the workflow state machine in `lib/publishing/workflow.ts`: Submitted -> Under Review -> Approved / Changes Requested / Rejected; resubmit after changes; only an Approved item can be published; publishing a replacement marks the old version Superseded; unpublish; and role rules (Staff submit, Partner review, Manager publish; nobody else). Then implement it.
+- [x] Write failing tests for the naming engine in `lib/publishing/naming.ts` (`{DEPT}_{TYPE}_{TITLE}_v{VERSION}_{DATE}` -> `HR_ProcessDoc_EmployeeHandbook_v8_2027-01`, title cleanup, next version for a replacement) and for a deterministic replacement-match helper, then implement them
+- [x] Add `lib/firm-config.ts` (firm id, departments with lead partner, document types, naming template, default audience, Published folder name, AI on/off) so nothing RISE-specific is hard-coded in the workflow
+- [x] Build the AI layer: `AiProvider` interface, `ClaudeProvider` (structured outputs with zod), `gemini.ts` swap point, and two tasks: `suggestSubmission` (department and type) and `suggestPublish` (title, type, effective date, audience, replaces-which-document, change note). Write failing tests for the validators that clamp AI output to the firm's rules and mark low-confidence fields, with a fake provider.
+- [x] Add the in-memory store and Route Handlers: list and create submissions, run a workflow action, AI suggest endpoints, and a library endpoint that returns published documents the role may see
+- [x] Build `/publishing` (Submit a draft or idea with optional file, "Suggest with AI", and My Submissions with status, comments and resubmit), `/publishing/review` (Partner queue: approve with group-approval note, request changes, reject) and `/publishing/publish` (Manager queue: Smart Publish with AI pre-fill, live name preview, audience, replaces-existing, publish). Add a Publishing tab.
+- [x] Published documents appear in Search, department pages and counts for roles that may see them; superseded and unpublished ones disappear
+- [ ] Verify the full path in `npm run dev` with each role, with AI configured and not configured (verified without a key; still to run with a key)
+
+## Phase 24 — Firm setup, announcements and the document record
+Sections 4, 7 (Setup, Announce, Accountability) and 9.
+- [x] Settings page `/publishing/settings` (Partner with admin ability): document types, naming template with live preview, default audience, lead partner per department, AI on/off. Server validates the template tokens.
+- [x] In-app notifications on publish (header bell with unread count), replacing the firm-wide email
+- [x] What's New on Home: the 3 latest publishes with their change notes
+- [x] Document record in the file overview panel: version, submitted / approved / published by and when, group approval note
+
+## Phase 25 — Smart File for client documents and AI sensitivity check
+Sections 6 (External Documents) and 8.
+- [x] Smart File `/publishing/file`: upload a client file, AI suggests client, year, engagement type and document type (AI toggle defaults OFF for client files, and reads only the file name), name built from the client template, duplicate check ("This looks like an existing file. Replace it?"), no partner approval. Client team access: only the team sees a client's files.
+- [x] AI sensitivity check on Smart Publish: flags content that doesn't match the chosen audience (e.g. pay data tagged All staff). Advisory only; the publisher decides.
+- [x] Run `npm test`, `npm run lint` and `npm run build`; walk through all three phases in `npm run dev`; log decisions in `docs/DECISIONS.md`

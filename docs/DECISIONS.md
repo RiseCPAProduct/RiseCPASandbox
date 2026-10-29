@@ -196,3 +196,58 @@
 **Decision:** The walk-through was scripted with `playwright-core` (installed outside the repo, as before) against `npm run dev`: 45 checks at 1280px and 375px, with no console errors other than the expected 404 for an unknown department. No `security-auditor` agent is defined in this project, so that check is still open. The app has no back end, sign-in or secrets, sends no user input anywhere, and its only external link uses `rel="noopener noreferrer"`.
 **Alternatives considered:** Adding Playwright to the project (still worth doing if the prototype moves past the pitch stage).
 
+
+## 2026-10-28 — Rise/Folio in three phases, publishing first
+**Context:** The product moved from an intranet site to a publishing and findability app (DISCOVERY.md, "Rise/Folio MVP"). The team asked for few phases, starting with publishing, and for real AI calls so feasibility can be judged.
+**Decision:** Phase 23 builds the pipeline (Submit -> Partner approval -> Smart Publish) with AI; Phase 24 adds firm settings, in-app notifications, What's New and the document record; Phase 25 adds Smart File for client documents and the AI sensitivity check. Ask the Library (extra AI cost item) and Supabase are left for later.
+**Alternatives considered:** One phase per MVP screen (12+ phases, which the team didn't want).
+
+## 2026-10-28 — AI behind one server-side provider interface, Claude now, Gemini Flash-Lite by env var
+**Context:** Good Company plans Gemini Flash-Lite (MVP section 10); for now the prototype uses Claude, and swapping should be simple.
+**Decision:** Every AI call runs in a Route Handler on the server. `lib/ai/provider.ts` defines `AiProvider.generate({ system, prompt, schema })`, which returns JSON already matching a zod schema. `ClaudeProvider` uses the official `@anthropic-ai/sdk` with structured outputs (`messages.parse` + `betaZodOutputFormat`), low effort, and the server-side refusal fallback. `lib/ai/index.ts` picks the provider from `AI_PROVIDER`; `lib/ai/gemini.ts` is the swap point with the `@google/genai` call written out. Tasks (`lib/ai/tasks.ts`) build prompts and then validate every value against the firm's rules, dropping anything not in the lists and flagging low confidence for the form to highlight. With no key, the AI buttons explain why and every form works by hand.
+**Alternatives considered:** Calling the AI from the browser (exposes the key). A multi-provider SDK such as the Vercel AI SDK (one more abstraction to learn and keep current; our interface is about 20 lines and ports directly to a Supabase Edge Function). Free-text answers parsed by hand (fragile; structured outputs guarantee the shape).
+
+## 2026-10-28 — Default model claude-opus-5-5, overridable with AI_MODEL
+**Context:** Flash-Lite is a small, cheap model; a fair cost comparison needs a similar tier.
+**Decision:** Default to `claude-opus-5-5` and let `AI_MODEL` override it. `claude-haiku-5-5` is the closest tier to Flash-Lite for a like-for-like cost and speed test. The choice is the team's once real usage is measured.
+**Alternatives considered:** Hard-coding a smaller model (a cost decision nobody has made yet).
+
+## 2026-10-28 — In-memory store behind service functions; Supabase later
+**Context:** Henry wants a real back end, but there is no Supabase project or credentials yet.
+**Decision:** `lib/publishing/service.ts` holds all back-end rules as plain functions over a `PublishingStore` (submissions, notifications, client files, config). Route Handlers in `app/api/` call them. The store lives on `globalThis` per server process, is seeded with demo data, and resets on restart. Supabase replaces the store without changing the routes or UI.
+**Alternatives considered:** A JSON file on disk (survives restarts, but invites concurrent-write bugs and still isn't the target database). Supabase now (blocked on an account and keys).
+
+## 2026-10-28 — The server enforces the workflow; the browser only asks
+**Context:** Key rule: nobody writes directly to the Published folder, and publishing needs partner approval.
+**Decision:** `lib/publishing/workflow.ts` is a pure state machine with role rules (Partner reviews, Manager publishes, only the submitter resubmits, Supersede is system-only). On publish the server rebuilds the name, version and folder from the firm's template, retires the replaced version, and creates the notification. The demo role travels in an `x-demo-role` header; with real sign-in the session replaces it and nothing else changes. Staff see only their own submissions; queues return 403 to other roles. In the demo one partner reviews every department; with sign-in the review queue filters on the responsible partner.
+**Alternatives considered:** Trusting a file name built in the browser (anyone could publish any name).
+
+## 2026-10-28 — Pipeline documents join search through /api/library
+**Context:** Published documents must appear in search, department pages and counts, hidden above the viewer's level.
+**Decision:** `DemoRoleProvider` fetches `/api/library` for the current role and appends those items to the placeholder items, so every existing screen picks them up. The server filters by audience before sending, so hidden documents never reach the browser. Search shows the generated file name (e.g. `HR_Policy_VacationPolicy_v4_2026-11`).
+**Alternatives considered:** Moving all placeholder documents into the store (more churn than this phase needs).
+
+## 2026-10-28 — Replacement matching works without AI
+**Context:** "Replaces existing document?" should be suggested, and the product must work without AI.
+**Decision:** `findReplacementCandidates` scores published documents in the same department by shared title words, counting generic type words such as "form" or "policy" at half weight. Smart Publish shows the top match as a hint; with AI on, the AI picks from the same candidate list and any id outside it is dropped.
+**Alternatives considered:** AI only (no hint when AI is off).
+
+## 2026-10-28 — Settings: partners only, validated on the server, applies to the next publish
+**Context:** Section 4 gives partners or managers with admin ability control over publishing rules.
+**Decision:** Partners can edit document types (one word each), the naming template (must include {TITLE}, only known tokens, no characters invalid in file names), default audience, lead partners and both AI toggles. Names already published don't change.
+**Alternatives considered:** A separate admin flag per person (no sign-in yet to attach it to).
+
+## 2026-10-28 — Notifications: "seen" is per browser
+**Context:** In-app notifications replace the firm-wide email.
+**Decision:** A bell in the header lists publishes the role may see, with an unread count since the bell was last closed, stored with `useStoredValue`. Real use needs per-user storage, like the onboarding rule.
+**Alternatives considered:** Server-side read state (needs real users).
+
+## 2026-10-28 — Smart File: client team only, AI reads the file name only and starts off
+**Context:** Section 6: client files need no approval, but confidentiality is a firm boundary.
+**Decision:** Client files get their own template (`ACME-LTD_2026_T2_Bank-Statements_Dec`), folder (Client / Year / Engagement) and a duplicate check that asks before adding a new version. Only the client team and partners see a client's files; others get nothing back, not a locked item. The client-file AI toggle is off by default and, when on, sends only the file name and the clients the person is on the team for. Marking a file final locks it.
+**Alternatives considered:** Reading client file contents with AI (crosses the confidentiality boundary the firm set).
+
+## 2026-10-28 — Sensitivity check is advisory
+**Context:** Stretch feature: flag content that doesn't match the chosen audience.
+**Decision:** A button on Smart Publish runs the check for the audience currently chosen and shows concerns and a suggested audience. It never blocks publishing.
+**Alternatives considered:** Blocking publish on a flag (an AI false positive would stop real work).

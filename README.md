@@ -20,6 +20,17 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## AI setup (optional)
+
+The app works without AI. To turn on the AI suggestions, create `.env.local` (never commit it) with:
+
+```
+ANTHROPIC_API_KEY=your-key
+# Optional: AI_MODEL=claude-haiku-5-5  (default claude-opus-5-5)
+```
+
+To switch to Gemini Flash-Lite later, set `AI_PROVIDER=gemini` and `GEMINI_API_KEY`, then fill in `lib/ai/gemini.ts`. Nothing else changes. Restart `npm run dev` after editing `.env.local`.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

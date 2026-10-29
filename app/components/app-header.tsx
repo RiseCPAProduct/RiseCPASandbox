@@ -10,6 +10,7 @@ import { activeTab, NAV_TABS } from "@/lib/nav";
 import type { Role } from "@/lib/placeholder-documents";
 import { useDemoRole } from "./demo-role";
 import DepartmentSidebar from "./department-sidebar";
+import NotificationsBell from "./notifications-bell";
 import OneDriveButton from "./onedrive-button";
 
 const ROLES = Object.keys(ROLE_LABELS) as Role[];
@@ -37,6 +38,7 @@ export default function AppHeader() {
           <span className="ml-3 border-l border-zinc-300 pl-3 text-sm text-brand-charcoal">Intranet</span>
         </Link>
         <div className="ml-auto flex flex-wrap items-center gap-2">
+          <NotificationsBell />
           <OneDriveButton />
           <Field label="Viewing as (demo)" orientation="horizontal" size="small" className="items-center">
             <Dropdown

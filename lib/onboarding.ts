@@ -1,4 +1,4 @@
-import { daysBetween } from "./calendar";
+import { daysBetween } from "./dates";
 
 // The first month: the day of the first visit is day 1, so the tour still
 // shows on day 30 and stops from day 31.

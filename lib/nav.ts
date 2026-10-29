@@ -1,4 +1,4 @@
-export type TabId = "home" | "search" | "departments" | "publishing" | "calendar" | "help";
+export type TabId = "home" | "search" | "departments" | "publishing" | "help";
 
 export type NavTab = { id: TabId; label: string; href: string };
 
@@ -10,7 +10,6 @@ export const NAV_TABS: NavTab[] = [
   { id: "departments", label: "Departments", href: "/departments" },
   // Submit, review and publish: the one path into the Published folder
   { id: "publishing", label: "Publishing", href: "/publishing" },
-  { id: "calendar", label: "Calendar", href: "/calendar" },
   { id: "help", label: "Help", href: "/help" },
 ];
 

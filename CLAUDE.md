@@ -1,4 +1,4 @@
-## Development Process
+## Development Process 
 Enforce TDD workflow. Use /sync (preflight), /plan (design plan), and /done
 (validate).
 Refer to docs/DECISIONS.md and docs/IMPLEMENTATION_PLAN.md for context before work.

@@ -185,7 +185,7 @@ function SubmitForm({ onSubmitted }: { onSubmitted: () => void }) {
         </div>
         <ErrorBar message={error} />
         {done && (
-          <MessageBar intent="success">
+          <MessageBar layout="multiline" intent="success">
             <MessageBarBody>{done}</MessageBarBody>
           </MessageBar>
         )}
@@ -265,7 +265,7 @@ export default function SubmitView() {
   const { role } = useDemoRole();
   const list = useSubmissions("mine", role);
   return (
-    <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
       <SubmitForm onSubmitted={list.reload} />
       <MySubmissions list={list} />
     </div>

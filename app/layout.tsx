@@ -33,7 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <AppHeader />
           <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 pb-24">{children}</main>
           <footer className="mx-auto w-full max-w-6xl px-4 pb-24 text-xs text-zinc-500">
-            Sandbox prototype. All documents, people, events and policies shown are placeholder content.
+            Sandbox prototype. All documents, people and policies shown are placeholder content.
           </footer>
           <AskHrChat />
         </Providers>

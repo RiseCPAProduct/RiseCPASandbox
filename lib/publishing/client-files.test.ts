@@ -20,7 +20,7 @@ const input = {
   engagement: "T2",
   docType: "Bank-Statements",
   detail: "Dec",
-  originalFileName: "scan0042.pdf",
+  originalFileName: "scan0050.pdf",
 };
 
 describe("buildClientFileName", () => {

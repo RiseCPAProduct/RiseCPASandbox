@@ -205,7 +205,7 @@ function SmartPublish({
           </Button>
           {/* Advisory only (Rise/Folio stretch feature): the publisher decides. */}
           {check && check.audience === audience && (
-            <MessageBar intent={check.matchesAudience ? "success" : "warning"} className="mt-2">
+            <MessageBar layout="multiline" intent={check.matchesAudience ? "success" : "warning"} className="mt-2">
               <MessageBarBody>
                 {check.matchesAudience
                   ? `Nothing stood out as too sensitive for ${AUDIENCE_LABELS[audience]}.`
@@ -303,13 +303,13 @@ export default function PublishQueue() {
 
   return (
     <RoleGate allowed={["manager"]} message="The publish queue is for publishers (managers). Switch Viewing as to Manager to try it.">
-      <div className="grid gap-6 lg:grid-cols-[2fr_3fr]">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
         <section aria-labelledby="queue-heading">
           <h2 id="queue-heading" className="mb-3 font-heading text-xl font-bold text-brand-charcoal">
             Approved, ready to publish
           </h2>
           {published && (
-            <MessageBar intent="success" className="mb-3">
+            <MessageBar layout="multiline" intent="success" className="mb-3">
               <MessageBarBody>Published as {published}. Everyone who can see it has been notified.</MessageBarBody>
             </MessageBar>
           )}

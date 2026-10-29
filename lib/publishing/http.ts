@@ -26,7 +26,6 @@ export type AiStatus = { available: boolean; provider?: string; reason?: string 
 export function aiStatus(store: PublishingStore): { status: AiStatus; provider: AiProvider | null } {
   if (!store.config.aiEnabled) return { status: { available: false, reason: "AI is turned off in Settings." }, provider: null };
   const provider = getAiProvider();
-  if (!provider) return { status: { available: false, reason: "No AI key is configured on the server." }, provider: null };
   return { status: { available: true, provider: provider.name }, provider };
 }
 
@@ -36,7 +35,6 @@ export function clientAiStatus(store: PublishingStore): { status: AiStatus; prov
     return { status: { available: false, reason: "AI on client files is turned off in Settings." }, provider: null };
   }
   const provider = getAiProvider();
-  if (!provider) return { status: { available: false, reason: "No AI key is configured on the server." }, provider: null };
   return { status: { available: true, provider: provider.name }, provider };
 }
 

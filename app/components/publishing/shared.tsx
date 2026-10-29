@@ -77,16 +77,24 @@ export function HistoryList({ submission }: { submission: Submission }) {
 export function ErrorBar({ message }: { message?: string | null }) {
   if (!message) return null;
   return (
-    <MessageBar intent="error">
+    <MessageBar layout="multiline" intent="error">
       <MessageBarBody>{message}</MessageBarBody>
     </MessageBar>
   );
 }
 
 export function AiNote({ ai }: { ai: AiStatus | undefined }) {
-  if (!ai || ai.available) return null;
+  if (!ai) return null;
+  if (ai.available) {
+    if (ai.provider !== "demo") return null;
+    return (
+      <MessageBar layout="multiline" intent="info">
+        <MessageBarBody>Demo AI: suggestions are scripted for this showcase. Always check them before you save.</MessageBarBody>
+      </MessageBar>
+    );
+  }
   return (
-    <MessageBar intent="info">
+    <MessageBar layout="multiline" intent="info">
       <MessageBarBody>AI suggestions are off: {ai.reason} Every field can still be filled by hand.</MessageBarBody>
     </MessageBar>
   );
@@ -108,8 +116,8 @@ export function PublishingNav() {
   const { role } = useDemoRole();
   const tabs = SUB_TABS.filter((t) => t.roles.includes(role));
   return (
-    <nav aria-label="Publishing" className="overflow-x-auto">
-      <TabList size="small" selectedValue={pathname} onTabSelect={(_, data) => router.push(String(data.value))}>
+    <nav aria-label="Publishing">
+      <TabList size="small" className="flex-wrap!" selectedValue={pathname} onTabSelect={(_, data) => router.push(String(data.value))}>
         {tabs.map((t) => (
           <Tab key={t.href} value={t.href}>
             {t.label}
@@ -125,7 +133,7 @@ export function RoleGate({ allowed, children, message }: { allowed: Role[]; chil
   const { role } = useDemoRole();
   if (!allowed.includes(role)) {
     return (
-      <MessageBar intent="info">
+      <MessageBar layout="multiline" intent="info">
         <MessageBarBody>{message}</MessageBarBody>
       </MessageBar>
     );

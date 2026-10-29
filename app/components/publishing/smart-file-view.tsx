@@ -115,7 +115,7 @@ export default function SmartFileView() {
   const ready = Boolean(preview && fileName && /^\d{4}$/.test(year));
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
       <Card className="p-4!">
         <h2 className="font-heading text-xl font-bold text-brand-charcoal">File a client document</h2>
         <p className="text-sm text-zinc-600">No partner approval. Only the client&apos;s team can see it.</p>
@@ -193,7 +193,7 @@ export default function SmartFileView() {
             </p>
           )}
           {duplicate && (
-            <MessageBar intent="warning">
+            <MessageBar layout="multiline" intent="warning">
               <MessageBarBody>
                 This looks like an existing file ({duplicate.fileName}, {duplicate.versions.length} version
                 {duplicate.versions.length === 1 ? "" : "s"}). Replace it? The old version stays in its history.
@@ -209,7 +209,7 @@ export default function SmartFileView() {
             </MessageBar>
           )}
           {message && (
-            <MessageBar intent="success">
+            <MessageBar layout="multiline" intent="success">
               <MessageBarBody>{message}</MessageBarBody>
             </MessageBar>
           )}

@@ -262,3 +262,39 @@ Sections 6 (External Documents) and 8.
 - [x] Smart File `/publishing/file`: upload a client file, AI suggests client, year, engagement type and document type (AI toggle defaults OFF for client files, and reads only the file name), name built from the client template, duplicate check ("This looks like an existing file. Replace it?"), no partner approval. Client team access: only the team sees a client's files.
 - [x] AI sensitivity check on Smart Publish: flags content that doesn't match the chosen audience (e.g. pay data tagged All staff). Advisory only; the publisher decides.
 - [x] Run `npm test`, `npm run lint` and `npm run build`; walk through all three phases in `npm run dev`; log decisions in `docs/DECISIONS.md`
+
+---
+# Showcase clean-up phases (planned 2026-10-29)
+Goal: make the Publishing tab demo well without an AI key, fix the Publishing screens where content is cut off, and remove features that are no longer part of the product (the firm News hub and banner, the Calendar tab and the OneDrive button) along with leftover files. Rise/Folio is now a publishing and findability app; those intranet features came from the earlier hub phases (17, 18 and 20).
+
+## Phase 26 — Hard-coded demo AI for Publishing
+The AI buttons should always work in a showcase. A `DemoProvider` returns scripted, rule-based answers when no API key is set, so the same tasks, validators, routes and UI run unchanged. A real key still switches to Claude.
+- [x] Write failing tests for `lib/ai/demo.ts`: Submit suggests the department and type from keywords (e.g. "vacation" -> HR / Policy, "budget" -> Finance / Report) and marks low confidence when nothing matches; Publish cleans the title, keeps the type, uses this month, picks a narrower audience for pay or partner content, and picks the best-matching document to replace; Smart File reads client, year, engagement, type and month from the file name; the sensitivity check flags pay data tagged All staff and passes a plain policy
+- [x] Implement the demo answer builders and a `DemoProvider` (name "demo", short delay so the spinner shows). Each task passes its demo answer with the request; real providers ignore it
+- [x] `getAiProvider()` returns the `DemoProvider` when no key is set (or `AI_PROVIDER=demo`), so the Settings AI switches now visibly turn the buttons on and off
+- [x] Show a small "Demo AI: suggestions are scripted for this showcase" note instead of the "AI is off" note when the demo provider is in use
+- [x] Update the README AI section
+
+## Phase 27 — Publishing layout fix
+Wide form controls and long file names push past their card and get clipped.
+- [x] Find every clipped element on Submit, Review, Publish, Smart File and Settings at desktop and 375px widths
+- [x] Let grid columns shrink (`minmax(0, ...)` / `min-w-0`), make dropdowns and inputs fill their cell instead of using Fluent's fixed minimum width, and wrap long names
+- [x] Re-check every Publishing screen for each role at both widths
+
+## Phase 28 — Remove News, Calendar and OneDrive
+- [x] Update `lib/nav.test.ts` first (no Calendar tab), then remove the tab and `app/calendar/`
+- [x] Move `daysBetween`, `addDays` and `localToday` (still used by onboarding) into `lib/dates.ts` with their tests, and delete the rest of `lib/calendar.ts`, `lib/mock-events.ts` and `DEMO_TODAY`
+- [x] Delete the News banner, News hub, News accordion, `lib/mock-news.ts` (and tests) and `use-reduced-motion`, and remove them from Home
+- [x] Delete the OneDrive button and remove it from the header
+- [x] Update Home, the Help page (remove Calendar and OneDrive, add Publishing), the onboarding tour steps and the footer text
+
+## Phase 29 — Remove leftover bloat
+- [x] Delete the unused create-next-app files in `public/` and the boilerplate in `README.md`
+- [x] Check every dependency is still imported and remove any that are not
+- [x] Search for exports and files nothing imports any more and remove them
+
+## Phase 30 — Verify
+- [x] Run `npm test`, `npm run lint` and `npm run build`, and check that all three pass
+- [x] In `npm run dev`, walk the publishing path for each role with demo AI: Submit with "Suggest with AI", Partner approve, Smart Publish with AI pre-fill and the sensitivity check, Smart File, Settings AI switches on and off
+- [x] Check Home, Help and the header with no console errors and no 404s for removed pages
+- [x] Log decisions in `docs/DECISIONS.md`

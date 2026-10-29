@@ -251,3 +251,13 @@
 **Context:** Stretch feature: flag content that doesn't match the chosen audience.
 **Decision:** A button on Smart Publish runs the check for the audience currently chosen and shows concerns and a suggested audience. It never blocks publishing.
 **Alternatives considered:** Blocking publish on a flag (an AI false positive would stop real work).
+
+## 2026-10-29 — Scripted demo AI when no key is set
+**Context:** The team showcases the Publishing tab without an Anthropic key, so every AI button said "No AI key is configured" and the Settings switches seemed to do nothing.
+**Decision:** Add a `DemoProvider` behind the existing `AiProvider` interface. Each task passes a rule-based demo answer (keyword matching on the title, description, file name and excerpt) along with its prompt; the demo provider returns it after a short delay, and real providers ignore it. The answer still goes through the task's zod schema and the firm-rule validators, so the form behaves exactly as with real AI. `getAiProvider()` uses it when no key is set or `AI_PROVIDER=demo`; a key switches back to Claude. The UI labels demo suggestions as scripted.
+**Alternatives considered:** Hard-coding answers in the UI (bypasses the validators and Settings switches, and would be thrown away later). A separate demo branch in each route (four copies of the same logic). Removing the Claude provider (loses the swap point the team already decided on).
+
+## 2026-10-29 — News hub, Calendar and OneDrive button removed
+**Context:** The product is now a publishing and findability app (Rise/Folio). The firm News hub and banner (Phase 17), the Calendar tab (Phase 18) and the OneDrive button (Phase 20) are no longer part of it.
+**Decision:** Remove them with their data and helpers. The date helpers onboarding still needs move to `lib/dates.ts`. What's New on Home stays, because it lists publishes from the pipeline, not firm news. Ask HR stays. Earlier write-ups in FEASIBILITY.md are left as the record of what was considered.
+**Alternatives considered:** Hiding them behind a flag (keeps code nobody maintains).

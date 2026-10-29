@@ -11,7 +11,3 @@ export const ROLE_LABELS: Record<Role, string> = {
   manager: "Manager",
   partner: "Partner",
 };
-
-// Fixed "today" for the demo, so the server and every browser render the
-// same calendar month and upcoming events.
-export const DEMO_TODAY = "2026-10-01";

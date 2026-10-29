@@ -105,7 +105,7 @@ function SettingsForm({ config, onSaved }: { config: FirmConfig; onSaved: () => 
         />
         <ErrorBar message={error} />
         {saved && (
-          <MessageBar intent="success">
+          <MessageBar layout="multiline" intent="success">
             <MessageBarBody>Saved. New rules apply to the next publish; published names don&apos;t change.</MessageBarBody>
           </MessageBar>
         )}

@@ -1,5 +1,6 @@
 import { AUDIENCE_LABELS, type ClientFilingConfig, type FirmConfig } from "../firm-config";
 import { DEPARTMENTS, type Department, type Role } from "../placeholder-documents";
+import { demoClientFile, demoPublish, demoSensitivity, demoSubmit } from "./demo";
 import type { AiProvider } from "./provider";
 import {
   ClientFileSuggestionSchema,
@@ -123,7 +124,12 @@ export async function suggestSubmission(
     "Pick the department that owns this document and its document type.",
     documentBlock(doc),
   ].join("\n\n");
-  const raw = await provider.generate({ system: SYSTEM, prompt, schema: SubmitSuggestionSchema });
+  const raw = await provider.generate({
+    system: SYSTEM,
+    prompt,
+    schema: SubmitSuggestionSchema,
+    demo: () => demoSubmit(doc, config),
+  });
   return validateSubmitSuggestion(raw, config);
 }
 
@@ -149,7 +155,12 @@ export async function suggestPublish(
       : "There are no published documents it could replace; use null for replacesId.",
     documentBlock(doc),
   ].join("\n\n");
-  const raw = await provider.generate({ system: SYSTEM, prompt, schema: PublishSuggestionSchema });
+  const raw = await provider.generate({
+    system: SYSTEM,
+    prompt,
+    schema: PublishSuggestionSchema,
+    demo: () => demoPublish(doc, config, candidates, thisMonth),
+  });
   return validatePublishSuggestion(
     raw,
     config,
@@ -179,7 +190,12 @@ export async function suggestClientFile(
     "Suggest filing values from this file name only.",
     `<document>${NL}File name: ${fileName}${NL}</document>`,
   ].join(NL + NL);
-  const raw = await provider.generate({ system: SYSTEM, prompt, schema: ClientFileSuggestionSchema });
+  const raw = await provider.generate({
+    system: SYSTEM,
+    prompt,
+    schema: ClientFileSuggestionSchema,
+    demo: () => demoClientFile(fileName, rules, visibleClients, new Date().getFullYear()),
+  });
 
   const values: Partial<ClientFileValues> = { detail: raw.detail.trim().slice(0, 40) };
   const dropped = new Set<keyof ClientFileValues>();
@@ -204,5 +220,10 @@ export async function checkSensitivity(provider: AiProvider, doc: DocumentInput,
     "Flag content that should not reach that audience, such as individual pay, performance or discipline, partner-only finances, or client-identifying data in an internal document.",
     documentBlock(doc),
   ].join(NL + NL);
-  return provider.generate({ system: SYSTEM, prompt, schema: SensitivityCheckSchema });
+  return provider.generate({
+    system: SYSTEM,
+    prompt,
+    schema: SensitivityCheckSchema,
+    demo: () => demoSensitivity(doc, audience),
+  });
 }

@@ -9,7 +9,7 @@ const SECTIONS = [
     title: "Home",
     body: [
       "Home is your starting point. Staff see a short list of key links: the Employee Policy Manual, SOPs, how-to guides and the IT Service Ticket Guide. Managers and partners see department cards and a My Team section with performance reviews and coaching notes.",
-      "The green banner at the top rotates through the three latest announcements every few seconds. Use the arrows to move between them, or the X to hide it until something new is posted. It stops rotating while your mouse or keyboard focus is on it.",
+      "What's new at the top lists the latest documents published through the Publishing tab, with what changed.",
     ],
   },
   {
@@ -30,10 +30,11 @@ const SECTIONS = [
     ],
   },
   {
-    id: "calendar",
-    title: "Calendar",
+    id: "publishing",
+    title: "Publishing",
     body: [
-      "The calendar shows firm events and monthly socials. Days with events are highlighted; select one to see its details. News and blog posts sit beside it; expand a post to read it.",
+      "Publishing is the one way into the Published Documents folder. Anyone can submit a draft or an idea; the responsible partner approves it, asks for changes or rejects it; then a manager publishes it with the firm's name, folder and audience.",
+      "Suggest with AI pre-fills the forms, and a person always checks and approves. In this prototype the AI is a scripted demo. Smart File files client documents by their file name, and partners can change the publishing rules and turn AI on or off in Settings.",
     ],
   },
   {
@@ -42,11 +43,6 @@ const SECTIONS = [
     body: [
       "The Ask HR button in the bottom-right corner opens a chat for HR policy questions, such as vacation, bereavement leave or expenses. It answers questions only and can't book time off. Clear chat starts over. In this prototype the answers are scripted placeholder content.",
     ],
-  },
-  {
-    id: "onedrive",
-    title: "My OneDrive",
-    body: ["My OneDrive in the header is a shortcut to your own files. In this prototype it opens a placeholder link."],
   },
   {
     id: "roles",

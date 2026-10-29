@@ -10,7 +10,7 @@ import {
   DialogSurface,
   DialogTitle,
 } from "@fluentui/react-components";
-import { addDays, daysBetween, localToday } from "@/lib/calendar";
+import { addDays, daysBetween, localToday } from "@/lib/dates";
 import { ONBOARDING_DAYS, shouldShowOnboarding } from "@/lib/onboarding";
 import { useStoredValue } from "../hooks/use-stored-value";
 
@@ -20,12 +20,12 @@ const DISMISSED_KEY = "rise-onboarding-dismissed";
 const LAST_SHOWN_KEY = "rise-onboarding-last-shown";
 
 export const TOUR_STEPS = [
-  { title: "Home", text: "Your starting point: key links or your departments and team, the latest news and upcoming events." },
+  { title: "Home", text: "Your starting point: what was just published, then key links or your departments and team." },
   { title: "Search", text: "Find any document or folder across every department. Filter by department, folder, type or year, and select a file to see its details." },
   { title: "Departments", text: "Open a department from the cards or the menu button at the top left, then jump straight to its Budget, Minutes, Projects or Published Documents." },
-  { title: "Calendar", text: "Firm events and monthly socials, with news and blog posts alongside." },
+  { title: "Publishing", text: "Submit a draft or idea, partners approve it, and a publisher files it with the right name, folder and audience. AI pre-fills the forms." },
   { title: "Help", text: "The full guide to the hub. You can reopen this tour from there at any time." },
-  { title: "Ask HR and OneDrive", text: "Ask HR policy questions with the button in the bottom-right corner, and open your own files with My OneDrive in the header." },
+  { title: "Ask HR", text: "Ask HR policy questions with the button in the bottom-right corner." },
 ];
 
 type Onboarding = {

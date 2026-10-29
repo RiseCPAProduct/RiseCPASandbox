@@ -1,47 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RISE CPA (Rise/Folio prototype)
 
-## Getting Started
+A sandbox prototype of a publishing and findability app for RISE CPA, built with Next.js, Fluent UI React v9 and Tailwind CSS. All documents, people and policies are placeholder content.
 
-First, run the development server:
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). Use **Viewing as** in the header to switch between Staff, Manager and Partner.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Other scripts: `npm test` (Vitest), `npm run lint`, `npm run build`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## AI
 
-## AI setup (optional)
+With no API key, the Publishing AI buttons use **demo AI**: scripted, keyword-based suggestions (`lib/ai/demo.ts`) so the showcase always works. The Settings page can still turn AI on and off.
 
-The app works without AI. To turn on the AI suggestions, create `.env.local` (never commit it) with:
+To use real AI instead, create `.env.local` (never commit it) and restart `npm run dev`:
 
 ```
 ANTHROPIC_API_KEY=your-key
 # Optional: AI_MODEL=claude-haiku-5-5  (default claude-opus-5-5)
+# Optional: AI_PROVIDER=demo  forces demo AI even with a key
 ```
 
-To switch to Gemini Flash-Lite later, set `AI_PROVIDER=gemini` and `GEMINI_API_KEY`, then fill in `lib/ai/gemini.ts`. Nothing else changes. Restart `npm run dev` after editing `.env.local`.
+To switch to Gemini Flash-Lite later, set `AI_PROVIDER=gemini` and `GEMINI_API_KEY`, then fill in `lib/ai/gemini.ts`. Nothing else changes.
 
-## Learn More
+## Project notes
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Planning and decisions live in `docs/IMPLEMENTATION_PLAN.md` and `docs/DECISIONS.md`.

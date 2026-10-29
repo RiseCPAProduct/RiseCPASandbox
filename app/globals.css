@@ -25,3 +25,18 @@ body {
   color: var(--foreground);
   font-family: var(--font-open-sans), Arial, Helvetica, sans-serif;
 }
+
+/* Publishing forms: let grid cells and Fluent controls shrink to fit their
+   card. Fluent dropdowns have a fixed 250px minimum width and file pickers
+   don't shrink, so at mid widths they were clipped by the card's edge. */
+.publishing .grid > * {
+  min-width: 0;
+}
+
+.publishing .fui-Dropdown,
+.publishing .fui-Input,
+.publishing .fui-Textarea,
+.publishing input[type="file"] {
+  min-width: 0;
+  max-width: 100%;
+}

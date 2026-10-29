@@ -67,7 +67,7 @@ export function seedSubmissions(): Submission[] {
       status: "submitted",
       submittedBy: "Antonio Silva",
       responsiblePartner: "Nolan Reyes",
-      history: [{ status: "submitted", by: "Antonio Silva", at: "2026-10-20T14:10:00.000Z" }],
+      history: [{ status: "submitted", by: "Antonio Silva", at: "2026-10-17T00:00:00.000Z" }],
     },
     {
       id: "sub-2",
@@ -82,12 +82,12 @@ export function seedSubmissions(): Submission[] {
       submittedBy: "Priya Nair",
       responsiblePartner: "Eric Lam",
       approvedBy: "Eric Lam",
-      approvedAt: "2026-10-22T16:00:00.000Z",
+      approvedAt: "2026-10-17T16:00:00.000Z",
       approvalNote: "Approved at partners' meeting, Oct 22",
       history: [
         { status: "submitted", by: "Priya Nair", at: "2026-10-15T09:00:00.000Z" },
-        { status: "under_review", by: "Eric Lam", at: "2026-10-16T09:00:00.000Z" },
-        { status: "approved", by: "Eric Lam", at: "2026-10-22T16:00:00.000Z", note: "Approved at partners' meeting, Oct 22" },
+        { status: "under_review", by: "Eric Lam", at: "2026-10-15T09:00:00.000Z" },
+        { status: "approved", by: "Eric Lam", at: "2026-10-17T16:00:00.000Z", note: "Approved at partners' meeting, Oct 17" },
       ],
     },
     {
@@ -101,11 +101,11 @@ export function seedSubmissions(): Submission[] {
       submittedBy: "Antonio Silva",
       responsiblePartner: "Eric Lam",
       history: [
-        { status: "submitted", by: "Antonio Silva", at: "2026-10-10T11:00:00.000Z" },
+        { status: "submitted", by: "Antonio Silva", at: "2026-10-11T11:00:00.000Z" },
         {
           status: "changes_requested",
           by: "Eric Lam",
-          at: "2026-10-12T10:00:00.000Z",
+          at: "2026-10-17T10:00:00.000Z",
           note: "Good idea. Please add the engagement letter step and who signs off.",
         },
       ],
@@ -126,7 +126,7 @@ export function seedClientFiles(): ClientFile[] {
       fileName: "NORTHWIND_2026_Audit_Engagement-Letter",
       folder: "NORTHWIND / 2026 / Audit",
       status: "final",
-      versions: [{ originalFileName: "Northwind EL signed.pdf", by: "Priya Nair", at: "2026-09-02T14:00:00.000Z" }],
+      versions: [{ originalFileName: "Northwind EL signed.pdf", by: "Priya Nair", at: "2026-09-04T14:00:00.000Z" }],
     },
   ];
 }

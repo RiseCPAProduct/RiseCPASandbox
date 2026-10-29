@@ -7,6 +7,8 @@ export type StructuredRequest<T> = {
   system: string;
   prompt: string;
   schema: z.ZodType<T>;
+  // Scripted answer for the demo provider (lib/ai/demo.ts); real providers ignore it
+  demo?: () => T;
 };
 
 export interface AiProvider {
